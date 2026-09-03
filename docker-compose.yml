@@ -1,0 +1,22 @@
+services:
+  redditwatch:
+    build: .
+    image: redditwatch:latest
+    restart: unless-stopped
+    # Credentials and any overrides live in .env (see .env.example).
+    env_file:
+      - .env
+    volumes:
+      # Seen-post state, so a restart doesn't re-alert on old posts.
+      - state:/data
+      # Your match rules. Run `cp config.example.json config.json` before the
+      # first `docker compose up` — Docker silently creates a *directory* here
+      # if the file is missing, and the container then fails to start.
+      # To run purely on environment variables instead, delete this mount and
+      # the command below; the built-in defaults are the r/fontainesdc Berlin
+      # ticket watch.
+      - ./config.json:/etc/redditwatch/config.json:ro
+    command: ["-config", "/etc/redditwatch/config.json"]
+
+volumes:
+  state:

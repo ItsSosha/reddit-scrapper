@@ -74,11 +74,49 @@ complete configuration on its own.
 
 ## Notifications
 
-Matches are always written to the structured log. Setting `TELEGRAM_BOT_TOKEN`
-and `TELEGRAM_CHAT_ID` enables Telegram delivery; setting `WEBHOOK_URL` POSTs a
-JSON body describing the match to that URL (useful for Discord/Slack relays or
-your own script). A post is only marked as seen once every notifier accepted
-it, so a failed delivery is retried on the next poll.
+Matches are always written to the structured log. A post is only marked as seen
+once every notifier accepted it, so a failed delivery is retried on the next
+poll rather than being lost.
+
+### Telegram
+
+1. Message [@BotFather](https://t.me/BotFather), send `/newbot`, and copy the
+   token it gives you.
+2. Send your new bot any message (a bot cannot start a conversation with you).
+3. Open `https://api.telegram.org/bot<TOKEN>/getUpdates` and read
+   `result[0].message.chat.id`.
+4. Export both values; the notifier enables itself when they are present:
+
+```sh
+export TELEGRAM_BOT_TOKEN=123456:ABC...
+export TELEGRAM_CHAT_ID=987654321
+```
+
+### Webhook
+
+Setting `WEBHOOK_URL` POSTs a JSON body describing the match (post fields, the
+matched terms, and a prerendered `text`) to that URL — useful for a Discord or
+Slack relay, or your own script.
+
+## Docker
+
+```sh
+cp config.example.json config.json   # your match rules
+cp .env.example .env                 # your credentials
+docker compose up -d --build
+docker compose logs -f
+```
+
+Both files must exist before the first `up`: Docker creates a *directory* in
+place of a missing bind-mounted file, and the container then fails to start.
+
+State lives in the named `state` volume mounted at `/data`, so restarts and
+image rebuilds don't replay the backlog. The image is a distroless static
+build running as `nonroot`; `make docker` builds it without compose.
+
+To run purely on environment variables, delete the `config.json` mount and the
+`command:` line from `docker-compose.yml` — the built-in defaults are exactly
+this Berlin ticket watch.
 
 ## Flags
 

@@ -1,0 +1,12 @@
+.git
+.github
+*.md
+Makefile
+Dockerfile
+docker-compose.yml
+.dockerignore
+.env
+config.json
+state.json
+redditwatch
+bin/

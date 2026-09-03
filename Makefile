@@ -1,6 +1,6 @@
 BINARY := redditwatch
 
-.PHONY: build test lint run dry-run clean
+.PHONY: build test lint run dry-run docker clean
 
 build:
 	go build -o $(BINARY) ./cmd/redditwatch
@@ -17,6 +17,9 @@ dry-run:
 
 run:
 	go run ./cmd/redditwatch -config config.json
+
+docker:
+	docker build -t redditwatch:latest .
 
 clean:
 	rm -f $(BINARY)
