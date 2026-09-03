@@ -1,0 +1,38 @@
+{
+  "subreddits": ["fontainesdc"],
+  "listing": "new",
+  "poll_interval": "60s",
+  "limit": 50,
+  "state_file": "state.json",
+  "state_retention": "720h",
+  "notify_on_first_run": false,
+
+  "match": {
+    "all_of": ["berlin"],
+    "any_of": ["ticket", "tickets", "spare", "selling", "sell", "wts", "face value"],
+    "none_of": ["looking for", "iso", "wtb"],
+    "fields": ["title", "selftext", "flair"],
+    "case_sensitive": false,
+    "whole_word": true
+  },
+
+  "reddit": {
+    "client_id": "",
+    "client_secret": "",
+    "username": "",
+    "password": "",
+    "user_agent": "go:reddit-scrapper:0.1.0 (by /u/your_username)"
+  },
+
+  "notifier": {
+    "telegram": {
+      "enabled": false,
+      "bot_token": "",
+      "chat_id": ""
+    },
+    "webhook": {
+      "enabled": false,
+      "url": ""
+    }
+  }
+}

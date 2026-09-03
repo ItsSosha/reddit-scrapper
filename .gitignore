@@ -1,0 +1,8 @@
+# build output
+/redditwatch
+/bin/
+
+# local runtime state and secrets
+state.json
+config.json
+.env
