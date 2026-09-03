@@ -1,9 +1,9 @@
 # reddit-scrapper
 
 A small Go service that polls subreddits for new posts matching configured
-terms and reports the matches. It was built to catch Berlin ticket sales in
-[r/fontainesdc](https://www.reddit.com/r/fontainesdc/), but the subreddit and
-the search terms are configuration, not code.
+terms and reports the matches to a log, a Telegram chat, or a webhook. The
+subreddits, the terms, the delivery and the poll interval are all
+configuration; nothing about what you are watching for lives in the code.
 
 ## Quick start
 
@@ -48,15 +48,17 @@ export REDDIT_PASSWORD=...
 | `match.any_of` | At least one term must appear (when non-empty). |
 | `match.none_of` | No term may appear. |
 | `match.fields` | Which fields to search: `title`, `selftext`, `flair`, `author`, `url`. |
-| `match.whole_word` | Require word boundaries, so `ticket` doesn't match `ticketing`. |
+| `match.whole_word` | Require word boundaries, so `sale` doesn't match `wholesale`. |
 
 Terms are literal text, not regular expressions, and matching is
 case-insensitive unless `case_sensitive` is set. Fields are searched
 individually, so a term never matches across a title/body boundary.
 
-The default match — `all_of: ["berlin"]` plus a ticket-word `any_of`, minus an
-`none_of` of buyer phrases — reports "spare Berlin ticket" and skips both
-"Berlin setlist thread" and "looking for a Berlin ticket".
+The three lists compose, which is usually enough to avoid alert fatigue
+without resorting to regular expressions. For example `all_of: ["raspberry
+pi"]` with `any_of: ["for sale", "selling"]` and `none_of: ["looking for",
+"wtb"]` reports someone selling a Pi, while skipping both general Pi chatter
+and people wanting to buy one.
 
 ### Environment overrides
 
@@ -68,9 +70,10 @@ useful in containers and systemd units:
 `REDDIT_CLIENT_SECRET`, `REDDIT_USERNAME`, `REDDIT_PASSWORD`,
 `REDDIT_USER_AGENT`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `WEBHOOK_URL`.
 
-Running with no config file at all uses the built-in defaults (r/fontainesdc,
-Berlin ticket terms), so `SUBREDDITS=... MATCH_ALL_OF=... ./redditwatch` is a
-complete configuration on its own.
+Environment values override the config file, and running with no config file
+at all falls back to the built-in defaults, so
+`SUBREDDITS=... MATCH_ALL_OF=... ./redditwatch` is a complete configuration on
+its own.
 
 ## Notifications
 
@@ -115,8 +118,8 @@ image rebuilds don't replay the backlog. The image is a distroless static
 build running as `nonroot`; `make docker` builds it without compose.
 
 To run purely on environment variables, delete the `config.json` mount and the
-`command:` line from `docker-compose.yml` — the built-in defaults are exactly
-this Berlin ticket watch.
+`command:` line from `docker-compose.yml`, and set `SUBREDDITS` and the
+`MATCH_*` variables in `.env` instead.
 
 ## Flags
 
